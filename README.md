@@ -1,6 +1,6 @@
 # Download Starred Email Threads Script
 #### Author: Matthew Dillon
-#### Last Edited: 2025-06-18
+#### Last Edited: 2025-06-27
 
 ---
 
@@ -29,7 +29,7 @@ This project was developed to automatically download "starred" email threads as 
 ## Background
 In early 2024, the corporate overlords of the company I was working for at the time sent a notification to all 300,000+ employees that a new email retention policy would go into effect on April 21, 2024. This new policy would delete all email threads older than 365 days, and would continue to do so on a rolling basis in perpetuity. I did not feel that this policy was fair to employees like myself who, albeit infrequently, rely on information memorialized in historic email threads. Furthermore, I felt that this policy is even more outrageous to subsets of the corporation such as legal teams, financial teams, and C-suite employees who will surely have very important documentation saved in the archives of their email inbox. Additionally, the corporate overlords did not provide any reasonable solution to download important email threads in bulk before deletion, meaning users had to manually download threads one by one.
 
-In a blatant act of corporate disobedience, I designed and implemented a solution for my work own email account via Google Apps Scripts to automatically forward emails at risk of deletion back into my inbox and archive them appropriately. Unfortunately, my director would not allow me to share or publish this solution to any colleagues. Therefore, I decided to design yet another script which approached the problem in a different way while adhering to the new corporate policy: automatically downloading any starred email threads and all attachments.
+In a blatant act of corporate disobedience, I designed and implemented a solution for my own work email account via Google Apps Scripts to automatically forward emails at risk of deletion back into my inbox and archive them appropriately. Unfortunately, my director would not allow me to share or publish this solution to any colleagues. Therefore, I decided to design yet another script which approached the problem in a different way while adhering to the new corporate policy: automatically downloading any starred email threads and all attachments.
 
 
 ## Project Relevance to Data Science
@@ -49,12 +49,12 @@ Since I had previously implemented a similar solution to this policy for my own 
 
 
 ## Basic Solution Description
-At a high level, my GAS code will iterate through all email threads that have been "starred" by the user. If the thread has been inactive for over 180 of days, the script will then download the email thread as both a .pdf file and a .eml file, as well as any attachments on the thread, and logically archive these newly created files into the user's Google Drive. With this functionality as well as a daily trigger set for an early morning hour, the script performs seamlessly in the background, all the while saving the user's email threads that have been identified as important.
+At a high level, my GAS code will iterate through all email threads that have been "starred" by the user. If the thread has been inactive for over 180 days, the script will then download the email thread as both a .pdf file and a .eml file, as well as any attachments on the thread, and logically archive these newly created files into the user's Google Drive. With this functionality as well as a daily trigger set for an early morning hour, the script performs seamlessly in the background, all the while saving the user's email threads that have been identified as important.
 
 
 ## Features
 - Automatically identifies starred email threads
-- Calculates the number of days elspased since the last activity on the thread
+- Calculates the number of days elapsed since the last activity on the thread
 - Downloads the email thread (.pdf and .eml) if the last activity exceeds 180 days (thread is considered inactive)
 - Downloads all attachments on the thread
 - Logically organizes downloaded files into the user's Google Drive
@@ -66,7 +66,7 @@ My GAS script begins by connecting to the Google account associated with the cur
 
 The script will then iterate via pagination through the user's email threads in their inbox and/or in their custom labels and identify email threads that have been starred by the user.
 
-For each qualifying email thread, the script will calculate the number of days that have elapsed since the most recent email message on the thread was either sent or received - this will be considered the number of days since last activtiy on the thread. If the most recent message is fewer than 180 days old, the script will do nothing and will iterate to the next thread. If the most recent message is greater than or equal to 180 days old, the email thread will then be automatically downloaded as a .pdf file. This newly created .pdf is named by extracting the date and the subject line of the *first* email on the thread for ease of discovery. The .pdf file will now be pushed to the "Downloaded Emails" Google Drive folder discussed above.
+For each qualifying email thread, the script will calculate the number of days that have elapsed since the most recent email message on the thread was either sent or received - this will be considered the number of days since last activity on the thread. If the most recent message is fewer than 180 days old, the script will do nothing and will iterate to the next thread. If the most recent message is greater than or equal to 180 days old, the email thread will then be automatically downloaded as a .pdf file. This newly created .pdf is named by extracting the date and the subject line of the *first* email on the thread for ease of discovery. The .pdf file will now be pushed to the "Downloaded Emails" Google Drive folder discussed above.
 
 Next, the script will also create a .eml file of the thread, which will be downloaded and pushed to the aforementioned "EML Files" subfolder of the overarching Google Drive folder. The naming convention for the .eml file is exactly the same as the .pdf file, concatenating the date and subject line of the *first* email message separated by a hyphen. After this, any attachments on the email thread will be identified and downloaded to the "Attachments" subfolder, keeping the file type and file name of the attachment as is.
 
@@ -97,8 +97,9 @@ The script has been configured such that it connects to the user's Google accoun
 
 The arbitrary 180 day benchmark I chose as an "inactive" email thread can be adjusted by the user using the *daysEmailThreadInactive* variable on line 44 of the script. The name of the "Downloaded Emails" Google Drive folder can also be edited by the user using the *downloadedEmailsFolderName* variable on line 27.
 
+
 ## Personal Deployment Results
-Once the script was finalized, I showed the code and the process to my director at the company to advertise the solution I had developed, which not only addresses the new corporate email retention policy but also aleviates any concerns he had about sharing my other automated email forwarding script. He was quite impressed with the abilities of this new script, and he scheduled a meeting for me to showcase it to the corporate director of compliance at the organization.
+Once the script was finalized, I showed the code and the process to my director at the company to advertise the solution I had developed, which not only addresses the new corporate email retention policy but also alleviates any concerns he had about sharing my other automated email forwarding script. He was quite impressed with the abilities of this new script, and he scheduled a meeting for me to showcase it to the corporate director of compliance at the organization.
 
 Even though I had my director's support and the corporate compliance team was really excited about the prospect of this solution, steps to implement it across the company were unfortunately never pursued.
 
@@ -108,10 +109,10 @@ I do not personally have this script triggered and deployed for my personal acco
 ## Future Enhancements
 While I do not plan on enhancing this script any further because I leverage an alternative solution, here are some ways in which the script could be enhanced in future versions:
 1. Create an actual script deployment so that the script does not need to be copied/pasted into a user's personal GAS project to function
-2. Incorporate text analytics so that custom labels can be created and/or applied based on the content of the email thread
-3. Improve the current structure of applying and creating labels such that it is easier for other users to customize based on individualized needs
-4. Change the 363 day mark into a parameter that the user can more easily specify at the beginning of the script
-5. Allow the user to custom-filter which email threads should be forwarded (example: only forward emails if any message on the thread is from persons A, B, or C)
+2. Improve the Google Drive folder so that the user can choose the naming convention for the folder and subfolders which the downloaded files will be pushed to
+3. Change the 180 day "email inactivity" metric into a parameter that the user can more easily specify at the beginning of the script
+4. Enhance the code to consolidate duplicated efforts (i.e. iteration through the "Downloaded Emails" thread *after* iteration through all email threads)
+5. Identify ways in which the script can handle email attachments that are locked, confidential, password-protected, etc.
 
 ---
 
